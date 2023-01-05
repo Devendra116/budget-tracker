@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <title>Hello, world!</title>
+</head>
+
+<body>
+  {% load static %}
+  {% include 'navbar.html' %}
+  <div class="form-row " style="margin:100px;margin-top:20px;">
+
+
+    <div class="card text-white mx-auto bg-primary  mb-3" style="width: 13rem;">
+      <div class="card-body">
+       <center> <h5 class="card-title">Income</h5>
+        <h1>{{user.profile.income|floatformat:2 }}</h1></center>
+      </div>
+    </div>
+
+    <div class="card text-white mx-auto  bg-warning  mb-3"" style="width: 13rem;">
+      <div class="card-body">
+       <center> <h5 class="card-title">Expense</h5>
+        <h1>{{user.profile.expense|floatformat:2 }}</h1></center>
+      </div>
+    </div>
+
+    <div class="card text-white mx-auto  bg-info mb-3" style="width: 13rem;">
+      <div class="card-body">
+       <center> <h5 class="card-title">Budget</h5>
+        <h1>{{user.profile.budget|floatformat:2 }}</h1></center>
+      </div>
+    </div>
+    <div class="card text-white mx-auto  bg-warning  mb-3"" style="width: 13rem;">
+      <div class="card-body">
+       <center> <h5 class="card-title">Credit Balnace</h5>
+        <h1>{{user.profile.credit_balance|floatformat:2 }}</h1></center>
+      </div>
+    </div>
+
+    <div class="card text-white mx-auto  bg-primary mb-3" style="width: 13rem;">
+      <div class="card-body">
+       <center> <h5 class="card-title">Owe Balance</h5>
+        <h1>{{user.profile.owe_balance|floatformat:2 }}</h1></center>
+      </div>
+    </div>
+
+    <!-- <div class="input-group d-flex justify-content-center">
+      <button type="button" class="btn btn btn-success btn-lg" ><a  href="{% url 'transaction' %}">Create Transaction</a> </button>
+    </div> -->
+
+
+    <table  class="table table-hover" >
+
+      <thead>
+        <tr class="table-primary">
+        <h3 class="margin-flex">Transaction Detail</h3>
+
+          <th scope="col">Transaction note</th>
+          <th scope="col">Category</th>
+          <th scope="col">Total Amount</th>
+          <th scope="col">Bill Splited</th>
+          <th scope="col">Date</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody id="transactionId">
+        {% for transaction in transactions%}
+        {% if  transaction.transaction_type == "Expense" %}
+        <tr class="table-danger">
+          <td>{{transaction.transaction_note}}</td>
+          <td>{{transaction.category}}</td>
+          <td>-{{transaction.amount|floatformat:2}}</td>
+          <td>{{transaction.is_bill_splitted}}</td>
+          <td>{{transaction.transaction_updated|date:'Y-m-d'  }}</td>
+
+          <td>
+            <button class="btn btn-warning"><a href="{% url 'update_transaction' transaction.id %}">Edit</a></button>
+            <button class="btn btn-warning"><a href="{% url 'delete_transaction' transaction.id %}">Delete</a></button>
+          </td>
+          
+
+        </tr>
+        {% else %}
+        <tr class="table-success">
+          <td>{{transaction.transaction_note}}</td>
+          <td>{{transaction.category}}</td>
+          <td>+{{transaction.amount|floatformat:2}}</td>
+          <td>{{transaction.is_bill_splitted}}</td>
+          <td>{{transaction.transaction_updated|date:'Y-m-d' }}</td>
+
+          <td>
+            <button class="btn btn-warning"><a href="{% url 'update_transaction' transaction.id %}">Edit</a></button>
+            <button class="btn btn-warning"><a href="{% url 'delete_transaction' transaction.id %}">Delete</a></button>
+          </td>
+        </tr>
+        {% endif%}
+
+        {% endfor%}
+ 
+       
+
+
+      </tbody>
+    </table>
+    <table  class="table table-hover" >
+
+      <thead>
+        <tr class="table-primary">
+        <h3>Split Bill</h3>
+
+          <th scope="col">Bill Note</th>
+          <th scope="col">Status </th>
+          <th scope="col">Amount</th>
+          <th scope="col">Generated On</th>
+          <th scope="col">Bill Payer </th>
+          <th scope="col">Bill Creator </th>
+           
+        </tr>
+      </thead>
+      <tbody id="billId">
+        {% for bill in bills%}
+        {% if  bill.bill_paid == True %}
+        <tr class="table-success">
+          <td>{{bill.transac_bill_id}}</td>
+          <td>
+            <button class="btn btn-warning"><a href="{% url 'update_bill' bill.id %}">Paid</a></button>
+          </td>
+          <td>{{bill.bill_amount|floatformat:2}}</td>
+          <td>{{bill.created_on|date:'d b, Y'}}</td>
+          <td>{{bill.transac_bill_id.payer}}</td>
+          <td>{{bill.transac_bill_id.transc_creator}}</td>
+          
+        </tr>
+        {% else %}
+        <tr class="table-danger">
+          <td>{{bill.transac_bill_id}}</td>
+          <td>
+            <button class="btn btn-warning "><a href="{% url 'update_bill' bill.id %}">Pending</a></button>
+          </td>
+          <td>{{bill.bill_amount|floatformat:2}}</td>
+          <td>{{bill.created_on|date:'d b, Y'}}</td>
+          <td>{{bill.transac_bill_id.payer}}</td>
+          <td>{{bill.transac_bill_id.transc_creator}}</td>
+          
+        </tr>
+        {% endif%}
+        
+        
+
+        {% endfor%}
+ 
+      </tbody>
+    </table>
+    
+  </div>
+  
+<script>
+  function filterRows() {
+    var from = $('#datefilterfrom').val();
+    var to = $('#datefilterto').val();
+  
+    if (!from && !to) { // no value for from and to
+      return;
+    }
+  
+    from = from || '1970-01-01'; // default from to a old date if it is not set
+    to = to || '2999-12-31';
+  
+    var dateFrom = moment(from);
+    var dateTo = moment(to);
+  
+    $('#transactionId tr').each(function(i, tr) {
+      var val = $(tr).find("td:nth-child(4)").text();
+      var dateVal = moment(val, "DD/MM/YYYY");
+      var visible = (dateVal.isBetween(dateFrom, dateTo, null, [])) ? "" : "none"; // [] for inclusive
+      $(tr).css('display', visible);
+    });
+  }
+  
+  $('#datefilterfrom').on("change", filterRows);
+  $('#datefilterto').on("change", filterRows);
+</script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
